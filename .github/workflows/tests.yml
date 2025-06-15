@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Create test database
         run: |
-          mysql -u root -ptest -h localhost -e "CREATE DATABASE IF NOT EXISTS laravel_test;" -h
+          mysql -u root -ptest -h localhost -e "CREATE DATABASE IF NOT EXISTS laravel_test;"
 
       - name: Checkout code
         uses: actions/checkout@v4
