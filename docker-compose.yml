@@ -1,0 +1,31 @@
+services:
+    php:
+        working_dir: /app
+        stop_grace_period: 1s
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "80:8080"
+        volumes:
+            - .:/app
+        labels:
+            - "dev.orbstack.domains=erp.local"
+        depends_on:
+            - singlestore
+
+    singlestore:
+        platform: linux/amd64
+        image: ghcr.io/singlestore-labs/singlestoredb-dev:latest
+        environment:
+            ROOT_PASSWORD: root
+        ports:
+            - "3306:3306"
+            - "8080:8080"
+            - "9000:9000"
+        volumes:
+            - data:/var/lib/singlestore
+
+volumes:
+    data:
+        driver: local

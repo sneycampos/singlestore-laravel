@@ -1,0 +1,56 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      singlestoredb:
+        image: ghcr.io/singlestore-labs/singlestoredb-dev
+        ports:
+          - 3306:3306
+          - 8080:8080
+          - 9000:9000
+        env:
+          ROOT_PASSWORD: test
+
+    steps:
+      - name: sanity check using mysql client
+        run: |
+          mysql -u root -ptest -e "SELECT 1" -h 127.0.0.1
+
+      - name: Create test database
+        run: |
+          mysql -u root -ptest -e "CREATE DATABASE IF NOT EXISTS laravel;" -h
+
+      - name: Wait for SingleStoreDB to be ready
+        run: |
+          while ! mysqladmin ping -h127.0.0.1 --silent; do
+            echo "Waiting for SingleStoreDB to be ready..."
+            sleep 1
+          done
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, dom, fileinfo, curl, xml, zip, pcntl, pdo, mysql, mysqli, pdo_mysql
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Copy .env file
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Run Pest tests
+        run: ./vendor/bin/pest --bail
