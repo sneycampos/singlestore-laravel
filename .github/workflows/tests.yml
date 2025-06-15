@@ -28,6 +28,17 @@ jobs:
             -e ROOT_PASSWORD=root \
             ghcr.io/singlestore-labs/singlestoredb-dev
 
+      - name: Wait for SingleStoreDB to be ready
+        run: |
+          for i in {1..30}; do
+            if docker exec $(docker ps -q -f ancestor=ghcr.io/singlestore-labs/singlestoredb-dev) mysql -uroot -proot -e "SELECT 1"; then
+              echo "SingleStoreDB is ready"
+              break
+            fi
+            echo "Waiting for SingleStoreDB..."
+            sleep 5
+          done
+
       - name: Create test database
         run: |
           mysql -u root -proot -h 127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS laravel_test;"
