@@ -16,12 +16,12 @@ jobs:
           - 8080:8080
           - 9000:9000
         env:
-          ROOT_PASSWORD: test
+          ROOT_PASSWORD: root
 
     steps:
       - name: Create test database
         run: |
-          mysql -u root -ptest -h 127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS laravel_test;"
+          mysql -u root -proot -h 127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS laravel_test;"
 
       - name: Checkout code
         uses: actions/checkout@v4
