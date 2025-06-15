@@ -8,17 +8,26 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      singlestoredb:
-        image: ghcr.io/singlestore-labs/singlestoredb-dev
-        ports:
-          - 3306:3306
-          - 8080:8080
-          - 9000:9000
-        env:
-          ROOT_PASSWORD: root
+#    services:
+#      singlestoredb:
+#        image: ghcr.io/singlestore-labs/singlestoredb-dev
+#        ports:
+#          - 3306:3306
+#          - 8080:8080
+#          - 9000:9000
+#        env:
+#          ROOT_PASSWORD: root
 
     steps:
+      - name: Run SingleStoreDB container
+        run: |
+          docker run --platform linux/amd64 -d \
+            -p 3306:3306 \
+            -p 8080:8080 \
+            -p 9000:9000 \
+            -e ROOT_PASSWORD=root \
+            ghcr.io/singlestore-labs/singlestoredb-dev
+
       - name: Create test database
         run: |
           mysql -u root -proot -h 127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS laravel_test;"
