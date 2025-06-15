@@ -19,13 +19,9 @@ jobs:
           ROOT_PASSWORD: test
 
     steps:
-      - name: sanity check using mysql client
-        run: |
-          mysql -u root -ptest -e "SELECT 1" -h 127.0.0.1
-
       - name: Create test database
         run: |
-          mysql -u root -ptest -e "CREATE DATABASE IF NOT EXISTS laravel;" -h
+          mysql -u root -ptest -e "CREATE DATABASE IF NOT EXISTS laravel_test;" -h
 
       - name: Wait for SingleStoreDB to be ready
         run: |
